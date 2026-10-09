@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff0f5">
+  <title>Un mensajito para ti 💗</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff0f5;
+      --bg2: #ffe1ec;
+      --card: rgba(255,255,255,.88);
+      --text: #63334a;
+      --muted: #8c5c70;
+      --pink: #ed6d9b;
+      --pink-dark: #d94e82;
+      --line: #ffd0e0;
+      --shadow: 0 18px 50px rgba(185, 78, 122, .16);
+    }
+    * { box-sizing: border-box; }
+    body.dark {
+      color-scheme: dark;
+      --bg: #211723;
+      --bg2: #382132;
+      --card: rgba(48, 32, 47, .94);
+      --text: #ffe8f1;
+      --muted: #e3b9ca;
+      --pink: #ff8eb7;
+      --pink-dark: #f36b9f;
+      --line: #624056;
+      --shadow: 0 18px 50px rgba(0,0,0,.28);
+    }
+    html { min-height: 100%; background: var(--bg); }
+    body {
+      margin: 0; min-height: 100vh; min-height: 100dvh;
+      font-family: ui-rounded, "Trebuchet MS", system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 10%, var(--bg2) 0 8%, transparent 28%),
+        radial-gradient(circle at 95% 85%, var(--bg2) 0 8%, transparent 28%),
+        var(--bg);
+      transition: background .35s, color .35s;
+      overflow-x: hidden;
+    }
+    button, a { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    .topbar {
+      width: min(100%, 850px); margin: auto; padding: 16px 18px 0;
+      display: flex; justify-content: flex-end; align-items: center;
+    }
+    .theme-toggle {
+      border: 1px solid var(--line); background: var(--card); color: var(--text);
+      border-radius: 999px; padding: 10px 14px; cursor: pointer;
+      box-shadow: 0 5px 18px rgba(120,50,80,.08); font-size: .92rem;
+    }
+    main {
+      width: min(100% - 28px, 690px); margin: 12px auto 30px;
+      position: relative; z-index: 1;
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 28px; box-shadow: var(--shadow);
+      padding: clamp(22px, 5vw, 42px); text-align: center;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }
+    .eyebrow {
+      display: inline-block; background: var(--bg2); color: var(--pink-dark);
+      border-radius: 999px; padding: 7px 13px; font-size: .82rem;
+      letter-spacing: .04em; font-weight: 800; margin-bottom: 12px;
+    }
+    .teddy-scene { font-size: clamp(3.2rem, 13vw, 5.4rem); line-height: 1.15; margin: 3px 0 10px; }
+    h1 { font-size: clamp(2rem, 8vw, 3.45rem); line-height: 1.05; margin: 10px 0 14px; letter-spacing: -.04em; }
+    h1 span { color: var(--pink-dark); }
+    .intro { font-size: clamp(1rem, 3.8vw, 1.13rem); line-height: 1.75; max-width: 540px; margin: 0 auto; }
+    .divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; color: var(--pink); }
+    .divider::before, .divider::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+    .letter { text-align: left; line-height: 1.85; font-size: 1rem; }
+    .letter p { margin: 0 0 15px; }
+    .quote {
+      border-left: 4px solid var(--pink); background: var(--bg2);
+      padding: 14px 16px; border-radius: 0 16px 16px 0;
+      font-weight: 700; line-height: 1.65; margin: 20px 0;
+    }
+    .promise {
+      display: grid; grid-template-columns: 44px 1fr; align-items: start; gap: 12px;
+      text-align: left; padding: 15px; border: 1px solid var(--line);
+      border-radius: 18px; margin: 10px 0; background: color-mix(in srgb, var(--card) 80%, var(--bg2));
+    }
+    .promise .emoji { font-size: 1.65rem; }
+    .promise p { margin: 3px 0 0; line-height: 1.6; color: var(--muted); }
+    .question { margin-top: 30px; padding-top: 24px; border-top: 1px dashed var(--line); }
+    .question h2 { font-size: clamp(1.5rem, 6vw, 2.15rem); margin: 0 0 8px; }
+    .question > p { color: var(--muted); margin: 0 0 20px; }
+    .buttons { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      min-height: 48px; border: 0; border-radius: 999px; padding: 13px 23px;
+      cursor: pointer; font-weight: 800; transition: transform .18s, box-shadow .18s;
+      touch-action: manipulation;
+    }
+    .btn:active { transform: scale(.97); }
+    .yes { color: white; background: linear-gradient(135deg, var(--pink), var(--pink-dark)); box-shadow: 0 9px 22px rgba(217,78,130,.28); }
+    .no { color: var(--text); background: var(--bg2); border: 1px solid var(--line); }
+    .result { display: none; margin-top: 22px; padding: 20px 15px; border-radius: 20px; background: var(--bg2); animation: appear .4s ease both; }
+    .result.show { display: block; }
+    .result-emoji { font-size: 3.5rem; display: block; margin-bottom: 8px; }
+    .result h3 { margin: 0 0 8px; font-size: 1.4rem; }
+    .result p { line-height: 1.65; margin: 0 auto 15px; max-width: 440px; }
+    .whatsapp { display: inline-flex; justify-content: center; align-items: center; gap: 8px; text-decoration: none; background: #20bd68; color: white; border-radius: 999px; padding: 13px 19px; font-weight: 800; }
+    footer { text-align: center; color: var(--muted); padding: 18px 10px 8px; font-size: .85rem; }
+    .floaties { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+    .floaty { position: absolute; bottom: -50px; opacity: .42; animation: floatUp linear infinite; }
+    .rain { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 4; display: none; }
+    .rain.active { display: block; }
+    .tear { position: absolute; top: -45px; animation: fall linear forwards; filter: drop-shadow(0 3px 3px rgba(80,80,180,.12)); }
+    .heart-burst { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 4; }
+    .burst-heart { position: absolute; bottom: -30px; animation: floatUp 3.4s ease-in forwards; }
+    .hidden { display: none !important; }
+    @keyframes floatUp { from { transform: translateY(0) rotate(0); opacity: 0; } 12% { opacity: .65; } to { transform: translateY(-115vh) rotate(25deg); opacity: 0; } }
+    @keyframes fall { to { transform: translateY(115vh) rotate(30deg); opacity: .1; } }
+    @keyframes appear { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @media (min-width: 700px) {
+      main { margin-top: 18px; }
+      .letter { font-size: 1.05rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="floaties" id="floaties" aria-hidden="true"></div>
+  <div class="rain" id="rain" aria-hidden="true"></div>
+  <div class="heart-burst" id="heartBurst" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Cambiar tema">🌙 Modo oscuro</button>
+  </header>
+
+  <main>
+    <article class="card">
+      <div class="eyebrow">♡ Un mensajito hecho para ti ♡</div>
+      <div class="teddy-scene" aria-label="Ositos y corazones">🧸🌷🧸</div>
+      <h1>Te amo <span>mucho</span> 💗</h1>
+      <p class="intro">Hay personas que llegan sin avisar y, de pronto, hacen que los días se sientan más bonitos. Tú estás haciendo eso conmigo.</p>
+
+      <div class="divider" aria-hidden="true">♡ ✿ ♡</div>
+
+      <section class="letter" aria-label="Carta de amor">
+        <p>Quiero decirte algo que me nace del corazón. En esta semana que hemos estado hablando, siento que he vivido más cosas bonitas que en mis 23 años de vida. Y no lo digo por decir: me gusta la tranquilidad que me das, la emoción de saber de ti y esa sonrisa que me sale cuando pienso en ti. 💞</p>
+
+        <p>Me encanta conocerte poco a poco, descubrir cómo eres, escucharte y compartir contigo incluso las cosas más sencillas. No necesito que cada día sea perfecto; me basta con que podamos ser sinceros, cuidarnos y seguir construyendo algo bonito a nuestro ritmo.</p>
+
+        <div class="quote">Si algún día te sientes sola, recuerda que no tienes que cargar con todo tú solita. Quiero escucharte, acompañarte y estar para ti, tanto en los días felices como en los que cuesten un poquito más. 🫶</div>
+
+        <p>No prometo ser perfecto, pero sí quiero poner de mi parte, demostrarte con acciones lo que siento y darte motivos para sentirte querida. Quiero que conmigo puedas ser tú misma, reírte sin miedo, hablar de lo que te preocupa y sentir que tienes a alguien que te toma en serio.</p>
+
+        <p>Gracias por llegar a mi vida y hacer que una semana pueda sentirse tan especial. No sé todo lo que nos espera, pero sí sé que me gustaría descubrirlo contigo, paso a paso, con cariño, respeto y muchas ganas de hacerte feliz. 🌸</p>
+      </section>
+
+      <div class="promise">
+        <div class="emoji">🤍</div>
+        <div><strong>Cuando necesites hablar</strong><p>Quiero escucharte sin juzgarte y acompañarte, incluso si no sabes muy bien qué decir.</p></div>
+      </div>
+      <div class="promise">
+        <div class="emoji">🧸</div>
+        <div><strong>Cuando tengas un día difícil</strong><p>Ojalá pueda ser ese abrazo que te recuerde que eres importante y mereces mucho amor.</p></div>
+      </div>
+      <div class="promise">
+        <div class="emoji">🌷</div>
+        <div><strong>Cuando estés feliz</strong><p>Quiero celebrar tus logros, escuchar tus historias y alegrarme de corazón por ti.</p></div>
+      </div>
+
+      <section class="question" aria-labelledby="questionTitle">
+        <div class="teddy-scene" aria-hidden="true">💌🐻💗</div>
+        <h2 id="questionTitle">Y ahora quiero preguntarte algo…</h2>
+        <p>¿Quieres ser mi novia? 🥹💕</p>
+        <div class="buttons">
+          <button class="btn yes" id="yesBtn" type="button">Sí, quiero 💖</button>
+          <button class="btn no" id="noBtn" type="button">No 🙈</button>
+        </div>
+
+        <div class="result" id="noResult" role="status" aria-live="polite">
+          <span class="result-emoji">😭💧</span>
+          <h3>Mi corazoncito se puso triste…</h3>
+          <p>Está bien, no quiero que te sientas presionada. 💗 Lo que sientes importa y quiero que puedas decidir con libertad. Si necesitas tiempo, lo entiendo.</p>
+          <button class="btn yes" id="tryAgainBtn" type="button">Darte un abrazo virtual 🧸</button>
+        </div>
+
+        <div class="result" id="yesResult" role="status" aria-live="polite">
+          <span class="result-emoji">🥹💖💐</span>
+          <h3>¡Me acabas de hacer muy feliz!</h3>
+          <p>Quiero guardar este momento en mi corazón. Gracias por darme la oportunidad de vivir algo bonito contigo. Te amo mucho. ❤️</p>
+          <a class="whatsapp" id="whatsappLink" href="https://wa.me/51988410652?text=Si%2C%20acepto%2C%20te%20amo%20Bengy%2C%20se%20puede%3F" target="_blank" rel="noopener noreferrer">💚 Decírmelo por WhatsApp</a>
+        </div>
+      </section>
+    </article>
+    <footer>Hecho con mucho cariño, para alguien muy especial 💗</footer>
+  </main>
+
+  <script>
+    const body = document.body;
+    const themeToggle = document.getElementById('themeToggle');
+    const floaties = document.getElementById('floaties');
+    const rain = document.getElementById('rain');
+    const heartBurst = document.getElementById('heartBurst');
+    const noResult = document.getElementById('noResult');
+    const yesResult = document.getElementById('yesResult');
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const tryAgainBtn = document.getElementById('tryAgainBtn');
+
+    // Decoración flotante, ligera y adaptable a la pantalla.
+    const decorations = ['♡', '💕', '🌸', '✨', '💗', '🌷'];
+    for (let i = 0; i < 17; i++) {
+      const item = document.createElement('span');
+      item.className = 'floaty';
+      item.textContent = decorations[i % decorations.length];
+      item.style.left = (Math.random() * 100) + '%';
+      item.style.animationDuration = (11 + Math.random() * 12) + 's';
+      item.style.animationDelay = (-Math.random() * 20) + 's';
+      item.style.fontSize = (15 + Math.random() * 17) + 'px';
+      floaties.appendChild(item);
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const dark = body.classList.toggle('dark');
+      themeToggle.textContent = dark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#211723' : '#fff0f5');
+    });
+
+    function clearEffects() {
+      rain.classList.remove('active');
+      rain.replaceChildren();
+      heartBurst.replaceChildren();
+    }
+
+    function startRain() {
+      clearEffects();
+      rain.classList.add('active');
+      for (let i = 0; i < 32; i++) {
+        const tear = document.createElement('span');
+        tear.className = 'tear';
+        tear.textContent = ['💧', '💦', '😭'][i % 3];
+        tear.style.left = (Math.random() * 100) + '%';
+        tear.style.animationDuration = (2.2 + Math.random() * 2.5) + 's';
+        tear.style.animationDelay = (Math.random() * 1.8) + 's';
+        tear.style.fontSize = (18 + Math.random() * 15) + 'px';
+        rain.appendChild(tear);
+      }
+    }
+
+    function startHearts() {
+      clearEffects();
+      for (let i = 0; i < 38; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'burst-heart';
+        heart.textContent = ['💖', '💗', '💕', '❤️', '✨'][i % 5];
+        heart.style.left = (Math.random() * 100) + '%';
+        heart.style.animationDelay = (Math.random() * 1.6) + 's';
+        heart.style.fontSize = (18 + Math.random() * 22) + 'px';
+        heartBurst.appendChild(heart);
+      }
+      window.setTimeout(() => heartBurst.replaceChildren(), 5200);
+    }
+
+    noBtn.addEventListener('click', () => {
+      yesResult.classList.remove('show');
+      noResult.classList.add('show');
+      startRain();
+      noResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    tryAgainBtn.addEventListener('click', () => {
+      clearEffects();
+      noResult.classList.remove('show');
+    });
+
+    yesBtn.addEventListener('click', () => {
+      noResult.classList.remove('show');
+      yesResult.classList.add('show');
+      startHearts();
+      yesResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  </script>
+</body>
+</html>
